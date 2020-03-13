@@ -11,6 +11,10 @@ const router = new VueRouter({
   // 配置路由规则
   routes: [
     {
+      path: '/',
+      redirect: '/login'
+    },
+    {
       path: '/login',
       component: Login
     },

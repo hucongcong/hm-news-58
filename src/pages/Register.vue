@@ -1,9 +1,18 @@
 <template>
-  <div class="register">我是注册组件</div>
+  <div class="register">
+    <hm-header>注册</hm-header>
+    <hm-logo></hm-logo>
+
+    <hm-button>注册</hm-button>
+  </div>
 </template>
 
 <script>
-export default {}
+export default {};
 </script>
 
-<style></style>
+<style scoped>
+span {
+  color: red;
+}
+</style>

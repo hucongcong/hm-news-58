@@ -10,6 +10,14 @@ import 'lib-flexible'
 // 导入路由对象
 import router from './router'
 
+// -------------------------全局注册组件-------------------------------
+import HmHeader from './components/HmHeader'
+import HmLogo from './components/HmLogo'
+import HmButton from './components/HmButton.vue'
+Vue.component('hm-header', HmHeader)
+Vue.component('hm-logo', HmLogo)
+Vue.component('hm-button', HmButton)
+
 Vue.config.productionTip = false
 
 new Vue({
