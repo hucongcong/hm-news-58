@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- 
+        给一个组件添加v-model,等价于
+        <demo v-model="msg"></demo>
+
+        <demo :value="msg" @input="fn"></demo>
+
+        v-model是一个简写，语法糖  
+        给一个组件使用v-model 等价于  给这个组件提供了  :value=""   @input=""
+       -->
+      <demo v-model="msg"></demo>
+      <demo :value="msg" @input="fn"></demo>
+    </div>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script>
+      Vue.component('demo', {
+        template: `
+          <div>
+            我是demo组件  ---- {{value}}
+            <button @click="fn">修改</button>
+          </div>
+        `,
+        props: {
+          value: String
+        },
+        methods: {
+          fn() {
+            this.$emit('input', '嘻嘻嘻')
+          }
+        }
+      })
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          msg: 'hello'
+        },
+        methods: {
+          fn(value) {
+            this.msg = value
+          }
+        }
+      })
+    </script>
+  </body>
+</html>

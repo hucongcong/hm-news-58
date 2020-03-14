@@ -1,11 +1,18 @@
 <template>
-  <div class="hm-button">
+  <div class="hm-button" @click="clickFn">
     <slot></slot>
   </div>
 </template>
 
 <script>
-export default {};
+export default {
+  methods: {
+    clickFn() {
+      // 只是通知父组件处理，触发组件的事件
+      this.$emit("click");
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>

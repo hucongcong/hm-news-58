@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <!-- <h1>vue的例子</h1>
+      <p>{{msg}}</p> -->
+      <!-- v-model可以给表单元素使用  也可以给组件使用，实际上v-model仅仅是一个语法糖 -->
+      <!-- v-model : 等价于 :value 和 @input的合写 -->
+      <!-- <input type="text" :value="msg" @input="fn" /> -->
+      <!-- <input type="text" v-model="msg" /> -->
+
+      <!-- 
+        组件也可以使用v-model
+        当你给一个组件提供了value和input事件的事件，可以简写为v-model
+      -->
+      <!-- <my-input :value="msg" @input="inputFn"></my-input> -->
+
+      <my-input v-model="msg"></my-input>
+    </div>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script>
+      Vue.component('my-input', {
+        template: `
+          <div>
+            <h3>这是我自己定义的input组件</h3>
+            <input type="text" :value="value" @input="handleFn"/>
+          </div>
+        `,
+        props: ['value'],
+        methods: {
+          handleFn() {
+            console.log('123')
+            this.$emit('input', document.querySelector('input').value)
+          }
+        }
+      })
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          msg: 'admin'
+        },
+        methods: {
+          inputFn(value) {
+            this.msg = value
+          }
+        }
+        // methods: {
+        //   fn(e) {
+        //     this.msg = document.querySelector('input').value
+        //   }
+        // }
+      })
+    </script>
+  </body>
+</html>

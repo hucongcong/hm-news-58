@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <demo :msg="msg" :money="money" :show="show"></demo>
+
+      <demo :msg="msg"></demo>
+    </div>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script>
+      Vue.component('demo', {
+        template: `
+          <div>
+            我是demo组件 ---- {{msg.toUpperCase()}} --- {{money}} --- {{show}}
+          </div>
+        `,
+        // 定义组件的时候，可以对传入的props进行校验
+        // props: ['msg', 'money', 'show']
+        props: {
+          // 接收msg，类型必须是字符串类型
+          msg: {
+            type: String,
+            // 必传的校验
+            // required: true,
+            // 默认值
+            default: 'abc'
+          },
+          money: Number,
+          show: Boolean
+        }
+      })
+
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          msg: 'hello',
+          money: 100,
+          show: true
+        }
+      })
+    </script>
+  </body>
+</html>
