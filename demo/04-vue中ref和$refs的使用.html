@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div id="app">
+      <h1>vue的例子</h1>
+      <div ref="aa">我是一个div</div>
+      <p ref="bb">我是一个p标签</p>
+
+      <demo ref="cc"></demo>
+    </div>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script>
+      /* 
+        vue中提供了一个 ref （引用）的语法,方便我们操作DOM元素和组件
+
+        1. 给某个DOM元素或者组件添加一个ref
+        2. 可以通过当前实例的一个属性 $refs获取实例上所有的ref
+      */
+      Vue.component('demo', {
+        template: `
+          <div>
+            我是一个demo组件
+          </div>
+        `,
+        methods: {
+          sayHi() {
+            console.log('大家好')
+          }
+        }
+      })
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          msg: 'hello'
+        },
+        mounted() {
+          // console.log(this.$refs)
+          this.$refs.aa.innerText = '123'
+          this.$refs.cc.sayHi()
+          // this.$refs.cc.sayHi()
+        }
+      })
+    </script>
+  </body>
+</html>

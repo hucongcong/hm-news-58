@@ -45,15 +45,20 @@ export default {
       let value = e.target.value
       this.$emit('input', value)
 
+      this.validate(value)
+    },
+    // 对表单进行校验，返回值：返回值校验的状态
+    validate(value) {
       // 添加表单校验
       if (this.rule) {
         // 判断value值是否符合传入 的正则
         if (this.rule.test(value)) {
           this.status = 'success'
+          return true
         } else {
           this.status = 'error'
+          return false
         }
-        // console.log(this.status)
       }
     }
   }

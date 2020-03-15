@@ -30,6 +30,18 @@ Vue.component('hm-input', HmInput)
 axios.defaults.baseURL = 'http://localhost:3000'
 Vue.prototype.$axios = axios
 
+// ----------------------vant-ui的处理--------------------------------
+// import Vant from 'vant'
+// import 'vant/lib/index.css'
+// // 使用vant插件
+// Vue.use(Vant)
+
+// 按需加载的方式
+import { Button, Field, Toast } from 'vant'
+Vue.use(Button)
+Vue.use(Field)
+Vue.use(Toast)
+
 Vue.config.productionTip = false
 
 new Vue({
