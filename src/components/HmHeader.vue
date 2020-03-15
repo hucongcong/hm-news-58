@@ -11,9 +11,8 @@
 </template>
 
 <script>
-export default {};
+export default {}
 </script>
-
 
 <style lang="less" scoped>
 // 在单文件组件中， style有两个属性需要掌握
@@ -33,6 +32,7 @@ export default {};
   .center {
     flex: 1;
     font-weight: 700;
+    font-size: 16px;
   }
 }
 </style>

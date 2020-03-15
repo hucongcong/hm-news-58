@@ -15,17 +15,21 @@ const router = new VueRouter({
       path: '/',
       redirect: '/login'
     },
+    // 命名路由：给每一个路由规则起一个名字，指定name即可。
     {
       path: '/login',
+      name: 'login',
       component: Login
     },
     {
       path: '/register',
+      name: 'register',
       component: Register
     },
     {
       path: '/user',
-      component: User
+      component: User,
+      name: 'user'
     }
   ]
 })
