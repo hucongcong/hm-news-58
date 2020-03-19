@@ -67,14 +67,17 @@ export default {
         }
       }).then(res => {
         // res.data才是后台真正返回的数据
-        console.log(res.data)
-        if (res.data.statusCode === 200) {
+        const { statusCode, data, message } = res.data
+        if (statusCode === 200) {
           // alert('恭喜你，登录成功了')
-          this.$toast.success('登录成功')
+          this.$toast.success(message)
+          // 保存登录的token和用户信息
+          localStorage.setItem('token', data.token)
+          localStorage.setItem('user_id', data.user.id)
           // 如果登录成功了，需要跳转到个人中心
           this.$router.push('/user')
         } else {
-          this.$toast.fail('用户名或者密码错误')
+          this.$toast.fail(message)
         }
       })
     }

@@ -17,18 +17,12 @@ import HmHeader from './components/HmHeader'
 import HmLogo from './components/HmLogo'
 import HmButton from './components/HmButton.vue'
 import HmInput from './components/HmInput.vue'
+import HmNavbar from './components/HmNavbar.vue'
 Vue.component('hm-header', HmHeader)
 Vue.component('hm-logo', HmLogo)
 Vue.component('hm-button', HmButton)
 Vue.component('hm-input', HmInput)
-
-// axios的优化
-// axios和vue没有关系，强行让axios和Vue有关系
-// 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
-// 给axios配置默认的基础路径
-// axios在发请求的时候，把url的路径自动拼接上baseURL
-axios.defaults.baseURL = 'http://localhost:3000'
-Vue.prototype.$axios = axios
+Vue.component('hm-navbar', HmNavbar)
 
 // ----------------------vant-ui的处理--------------------------------
 // import Vant from 'vant'
@@ -37,10 +31,72 @@ Vue.prototype.$axios = axios
 // Vue.use(Vant)
 
 // 按需加载的方式
-import { Button, Field, Toast } from 'vant'
+import {
+  Button,
+  Field,
+  Toast,
+  Dialog,
+  Radio,
+  RadioGroup,
+  Cell,
+  CellGroup,
+  Uploader
+} from 'vant'
 Vue.use(Button)
 Vue.use(Field)
 Vue.use(Toast)
+Vue.use(Dialog)
+Vue.use(Radio)
+Vue.use(RadioGroup)
+Vue.use(Cell)
+Vue.use(CellGroup)
+Vue.use(Uploader)
+
+// axios的优化
+// axios和vue没有关系，强行让axios和Vue有关系
+// 把axios绑定到了vue的原型上，所有的vue实例（组件）都可以通过 this.axios访问到axios
+// 给axios配置默认的基础路径
+// axios在发请求的时候，把url的路径自动拼接上baseURL
+axios.defaults.baseURL = 'http://localhost:3000'
+
+// 配置axios的响应拦截器，，，，所有的axios的响应会先经过响应拦截器
+// 可以在响应拦截器中对响应做一些通用的处理
+axios.interceptors.response.use(function(res) {
+  // 拦截器会拦截所有的请求的响应，返回拦截到的res
+  // console.log('拦截到了res', res)
+  // 通用对token失效进行处理
+  const { statusCode, message } = res.data
+  if (statusCode === 401 && message === '用户信息验证失败') {
+    // 说明token是验证失败的
+    // 就需要跳转到登录页面去
+    router.push('/login')
+    // 删除过期的token信息
+    localStorage.removeItem('token')
+    localStorage.removeItem('user_id')
+
+    // 可以给一个提示消息
+    Toast.fail(message)
+  }
+
+  return res
+})
+
+// axios的请求拦截器，所有的axios的请求都会先经过axios的请求拦截器
+axios.interceptors.request.use(function(config) {
+  console.log('所有的请求杯拦截le ', config)
+  // 统一的给请求添加token
+  const token = localStorage.getItem('token')
+  config.headers.Authorization = token
+  return config
+})
+
+Vue.prototype.$axios = axios
+
+// -----------------------全局过滤器=---------------------------------
+import moment from 'moment'
+Vue.filter('date', function(input) {
+  return moment(input).format('YYYY-MM-DD')
+})
 
 Vue.config.productionTip = false
 

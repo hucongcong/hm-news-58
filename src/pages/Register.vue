@@ -77,10 +77,12 @@ export default {
           // 跳转到登录页面
           // 发送请求登录就行，登录成功直接跳个人中心就行
           // $router.push()进行路由跳转，还可以传递额外的参数
-          // this.$router.push({
-          //   path: '/login',
-          //   query: { username: this.username, password: this.password }
-          // })
+          this.$router.push({
+            path: '/login',
+            query: { username: this.username, password: this.password }
+          })
+
+          // this.$router.push(`/login?username=${this.username}&password=${this.password}`)
 
           // 通过params传递参数，必须要是命名路由。
           this.$router.push({
