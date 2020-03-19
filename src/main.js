@@ -83,7 +83,7 @@ axios.interceptors.response.use(function(res) {
 
 // axios的请求拦截器，所有的axios的请求都会先经过axios的请求拦截器
 axios.interceptors.request.use(function(config) {
-  console.log('所有的请求杯拦截le ', config)
+  // console.log('所有的请求杯拦截le ', config)
   // 统一的给请求添加token
   const token = localStorage.getItem('token')
   config.headers.Authorization = token
@@ -94,8 +94,8 @@ Vue.prototype.$axios = axios
 
 // -----------------------全局过滤器=---------------------------------
 import moment from 'moment'
-Vue.filter('date', function(input) {
-  return moment(input).format('YYYY-MM-DD')
+Vue.filter('date', function(input, format = 'YYYY-MM-DD') {
+  return moment(input).format(format)
 })
 
 Vue.config.productionTip = false
