@@ -5,11 +5,7 @@
     <div class="avatar">
       <img :src="$axios.defaults.baseURL + info.head_img" alt />
       <!-- 上传头像的组件 -->
-      <van-uploader
-        class="uploader"
-        :before-read="beforeRead"
-        :after-read="afterRead"
-      />
+      <van-uploader class="uploader" :after-read="afterRead" />
     </div>
     <hm-navbar
       title="昵称"
@@ -71,7 +67,16 @@
     </van-dialog>
 
     <div class="cropper-mask" v-show="showCropper">
-      <vue-cropper></vue-cropper>
+      <vue-cropper
+        ref="cropper"
+        :img="img"
+        :autoCrop="true"
+        :autoCropWidth="150"
+        :autoCropHeight="150"
+        :fixed="true"
+      ></vue-cropper>
+      <van-button class="crop" type="primary" @click="crop">裁剪</van-button>
+      <van-button class="cancel" type="info" @click="cancel">取消</van-button>
     </div>
   </div>
 </template>
@@ -90,7 +95,8 @@ export default {
       password: '',
       show2: false,
       gender: 1,
-      showCropper: false
+      showCropper: false,
+      img: ''
     }
   },
   created() {
@@ -110,7 +116,7 @@ export default {
         const { statusCode, data } = res.data
         if (statusCode === 200) {
           this.info = data
-          console.log(this.info)
+          // console.log(this.info)
         }
       })
     },
@@ -123,7 +129,7 @@ export default {
         url: `/user_update/${user_id}`,
         data
       }).then(res => {
-        console.log(res.data)
+        // console.log(res.data)
         const { statusCode, message } = res.data
         if (statusCode === 200) {
           // 1. 重新渲染
@@ -217,31 +223,35 @@ export default {
       // 选择了图片之后，需要把图片异步的上传到服务器
       // ajax通过formData异步上传文件
       // console.log(file)
-      console.log('当选择完文件了，这个函数就会执行', file.file)
+      // console.log('当选择完文件了，这个函数就会执行', file.file)
 
-      // 需要异步的上传文件
-      const fd = new FormData()
-      fd.append('file', file.file)
-      this.$axios({
-        method: 'post',
-        url: '/upload',
-        data: fd
-      }).then(res => {
-        // console.log(res.data)
-        // 成功了，需要做什么？
-        const { statusCode, data } = res.data
-        if (statusCode === 200) {
-          // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
-          // console.log(data.url)
-          this.editUser({
-            head_img: data.url
-          })
-        }
-      })
+      // 读取完文件，需要裁剪这个文件
+      this.showCropper = true
+      // 设置上传的这个文件就是需要裁剪的文件
+      this.img = file.content
+      // // 需要异步的上传文件
+      // const fd = new FormData()
+      // fd.append('file', file.file)
+      // this.$axios({
+      //   method: 'post',
+      //   url: '/upload',
+      //   data: fd
+      // }).then(res => {
+      //   // console.log(res.data)
+      //   // 成功了，需要做什么？
+      //   const { statusCode, data } = res.data
+      //   if (statusCode === 200) {
+      //     // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
+      //     // console.log(data.url)
+      //     this.editUser({
+      //       head_img: data.url
+      //     })
+      //   }
+      // })
     },
     beforeRead(file) {
       // 控制文件大小不能超过200k
-      console.log('上传之前', file)
+      // console.log('上传之前', file)
       if (file.size / 1024 >= 200) {
         this.$toast.fail('文件大小不能超过200kb')
         return false
@@ -252,6 +262,39 @@ export default {
         return false
       }
       return true
+    },
+    // 取消裁剪
+    cancel() {
+      this.showCropper = false
+      this.img = ''
+    },
+    // 裁剪图片
+    crop() {
+      this.$refs.cropper.getCropBlob(data => {
+        // console.log(data)
+        // 需要把裁剪出来的文件进行上传
+        const fd = new FormData()
+        fd.append('file', data)
+        this.$axios({
+          method: 'post',
+          url: '/upload',
+          data: fd
+        }).then(res => {
+          const { statusCode, data } = res.data
+          if (statusCode === 200) {
+            // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
+            // console.log(data.url)
+            // 隐藏裁剪框
+            this.showCropper = false
+            // 把裁剪的图片地址清楚
+            this.img = ''
+            // 修改头像
+            this.editUser({
+              head_img: data.url
+            })
+          }
+        })
+      })
     }
   },
   filters: {
@@ -301,5 +344,16 @@ export default {
   z-index: 999;
   top: 0;
   left: 0;
+  .crop,
+  .cancel {
+    position: absolute;
+    top: 0;
+  }
+  .crop {
+    left: 0;
+  }
+  .cancel {
+    right: 0;
+  }
 }
 </style>
