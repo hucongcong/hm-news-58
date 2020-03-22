@@ -9,7 +9,7 @@ import Edit from '../pages/Edit.vue'
 import Test from '../pages/Test.vue'
 import MyFollow from '../pages/MyFollow.vue'
 import MyComments from '../pages/MyComments.vue'
-
+import MyStar from '../pages/MyStar.vue'
 Vue.use(VueRouter)
 
 const router = new VueRouter({
@@ -54,6 +54,11 @@ const router = new VueRouter({
       path: '/my-comments',
       component: MyComments,
       name: 'my-comments'
+    },
+    {
+      path: '/my-star',
+      component: MyStar,
+      name: 'my-star'
     }
   ]
 })
@@ -68,7 +73,7 @@ const router = new VueRouter({
 //2. 判断是否有token,如果有token，说明就是登录的，如果没有token，那就是没有登录的
 
 // 需要授权的路径，需要登录才能访问的路径
-const authUrl = ['/user', '/edit']
+const authUrl = ['/user', '/edit', '/my-follow', '/my-comments', '/my-star']
 router.beforeEach(function(to, from, next) {
   // console.log('to', to)
   // console.log('from', from)

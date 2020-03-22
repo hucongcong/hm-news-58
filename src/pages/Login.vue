@@ -40,7 +40,7 @@ export default {
   methods: {
     // 给DOM注册的事件，可以通过DOM的方式触发  给DOM元素注册点击事件，就可以点击触发
     // 如果给组件去注册事件，通过DOM是无法触发。而是通过 this.$emit触发
-    login() {
+    async login() {
       // 做一个表单的校验,如果表单校验不通过，不应该去发送请求
       const result1 = this.$refs.username.validate(this.username)
       const result2 = this.$refs.password.validate(this.password)
@@ -49,37 +49,27 @@ export default {
         return
       }
 
-      // 如果用户名没有校验成功，不发请求
-      // if (!this.$refs.username.validate(this.username)) {
-      //   return
-      // }
-      // // 如果密码没有校验成功，不发请求
-      // if (!this.$refs.password.validate(this.password)) {
-      //   return
-      // }
-
-      this.$axios({
+      const res = await this.$axios({
         method: 'post',
         url: '/login',
         data: {
           username: this.username,
           password: this.password
         }
-      }).then(res => {
-        // res.data才是后台真正返回的数据
-        const { statusCode, data, message } = res.data
-        if (statusCode === 200) {
-          // alert('恭喜你，登录成功了')
-          this.$toast.success(message)
-          // 保存登录的token和用户信息
-          localStorage.setItem('token', data.token)
-          localStorage.setItem('user_id', data.user.id)
-          // 如果登录成功了，需要跳转到个人中心
-          this.$router.push('/user')
-        } else {
-          this.$toast.fail(message)
-        }
       })
+      // res.data才是后台真正返回的数据
+      const { statusCode, data, message } = res.data
+      if (statusCode === 200) {
+        // alert('恭喜你，登录成功了')
+        this.$toast.success(message)
+        // 保存登录的token和用户信息
+        localStorage.setItem('token', data.token)
+        localStorage.setItem('user_id', data.user.id)
+        // 如果登录成功了，需要跳转到个人中心
+        this.$router.push('/user')
+      } else {
+        this.$toast.fail(message)
+      }
     }
   },
   data() {

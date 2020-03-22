@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // await只有在async函数中， await所在的函数必须是async函数
+      function fn() {
+        function fn1() {
+          async function fn3() {
+            const num = await 3
+            console.log(num)
+          }
+          fn3()
+        }
+        fn1()
+      }
+      fn()
+
+      // 解构重命名
+      const name = 'ls'
+      const user = {
+        name: 'zs',
+        age: 18
+      }
+
+      const { name: newName, age } = user
+      console.log(newName, age)
+      console.log(name)
+    </script>
+  </body>
+</html>

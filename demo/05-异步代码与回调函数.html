@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 事件循环  event-loop -->
+    <script>
+      // console.log(1)
+      // // ajax 定时器  事件  读写文件： 异步代码
+      // setTimeout(function() {
+      //   console.log(2)
+      // }, 0)
+
+      // setTimeout(function() {
+      //   console.log(4)
+      // }, 100)
+      // console.log(3)
+
+      // 回调函数： 异步的代码总是伴随着回调函数。
+      // 回调函数：回头再调用的函数， 把一个函数当成参数进行传递，这个当成参数的函数就是回调函数
+      // function fn(a) {
+      //   console.log(a)
+
+      //   console.log('我做一些其他的事情')
+      //   a()
+      // }
+      // fn(function() {
+      //   console.log('我是回调函数')
+      // })
+
+      setTimeout(function() {
+        console.log('123')
+      }, 1000)
+
+      div.addEventListener('click', function() {})
+
+      $.ajax({
+        url: '',
+        type: 'get',
+        success: function() {}
+      })
+    </script>
+  </body>
+</html>

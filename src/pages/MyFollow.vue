@@ -6,7 +6,7 @@
       <!-- 关注 -->
       <div class="item" v-for="item in list" :key="item.id">
         <div class="left">
-          <img :src="$axios.defaults.baseURL + item.head_img" alt="" />
+          <img :src="$axios.defaults.baseURL + item.head_img" alt />
         </div>
         <div class="center">
           <div class="name">{{ item.nickname }}</div>
@@ -44,33 +44,56 @@ export default {
         }
       })
     },
-    unfollow(id) {
-      // 弹出一个框
-      this.$dialog
-        .confirm({
+    async unfollow(id) {
+      // 等待弹框
+      try {
+        await this.$dialog.confirm({
           title: '温馨提示',
           message: '你确定要取关改用户吗？'
         })
-        .then(() => {
-          // 发送ajax请求，进行取消关注
-          this.$axios({
-            method: 'get',
-            url: `/user_unfollow/${id}`
-          }).then(res => {
-            // console.log(res.data)
-            const { statusCode, message } = res.data
-            if (statusCode === 200) {
-              // 提示消息
-              this.$toast.success(message)
-              // 重新渲染
-              this.getFollowList()
-            }
-          })
+        // 点击确定 发送ajax请求
+        const res = await this.$axios({
+          method: 'get',
+          url: `/user_unfollow/${id}`
         })
-        .catch(() => {
-          // 取消
-          this.$toast('操作取消')
-        })
+        // console.log(res.data)
+        const { statusCode, message } = res.data
+        if (statusCode === 200) {
+          // 提示消息
+          this.$toast.success(message)
+          // 重新渲染
+          this.getFollowList()
+        }
+      } catch {
+        this.$toast('取消操作')
+      }
+
+      // 弹出一个框
+      // this.$dialog
+      //   .confirm({
+      //     title: '温馨提示',
+      //     message: '你确定要取关改用户吗？'
+      //   })
+      //   .then(() => {
+      //     // 发送ajax请求，进行取消关注
+      //     this.$axios({
+      //       method: 'get',
+      //       url: `/user_unfollow/${id}`
+      //     }).then(res => {
+      //       // console.log(res.data)
+      //       const { statusCode, message } = res.data
+      //       if (statusCode === 200) {
+      //         // 提示消息
+      //         this.$toast.success(message)
+      //         // 重新渲染
+      //         this.getFollowList()
+      //       }
+      //     })
+      //   })
+      //   .catch(() => {
+      //     // 取消
+      //     this.$toast('操作取消')
+      //   })
     }
   }
 }

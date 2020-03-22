@@ -40,7 +40,8 @@ import {
   RadioGroup,
   Cell,
   CellGroup,
-  Uploader
+  Uploader,
+  List
 } from 'vant'
 Vue.use(Button)
 Vue.use(Field)
@@ -51,6 +52,7 @@ Vue.use(RadioGroup)
 Vue.use(Cell)
 Vue.use(CellGroup)
 Vue.use(Uploader)
+Vue.use(List)
 
 // axios的优化
 // axios和vue没有关系，强行让axios和Vue有关系

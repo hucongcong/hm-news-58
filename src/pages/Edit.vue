@@ -7,53 +7,26 @@
       <!-- 上传头像的组件 -->
       <van-uploader class="uploader" :after-read="afterRead" />
     </div>
-    <hm-navbar
-      title="昵称"
-      :content="info.nickname"
-      @click="showNickname"
-    ></hm-navbar>
-    <hm-navbar
-      title="密码"
-      :content="info.password | password"
-      @click="showPassword"
-    ></hm-navbar>
-    <hm-navbar
-      title="性别"
-      :content="info.gender === 1 ? '男' : '女'"
-      @click="showGenger"
-    ></hm-navbar>
+    <hm-navbar title="昵称" :content="info.nickname" @click="showNickname"></hm-navbar>
+    <hm-navbar title="密码" :content="info.password | password" @click="showPassword"></hm-navbar>
+    <hm-navbar title="性别" :content="info.gender === 1 ? '男' : '女'" @click="showGenger"></hm-navbar>
 
     <!-- 
       修改昵称的对话框
       v-model="show" 通过show的值来控制对话框的显示隐藏
     -->
-    <van-dialog
-      v-model="show"
-      title="修改昵称"
-      show-cancel-button
-      @confirm="editNickname"
-    >
+    <van-dialog v-model="show" title="修改昵称" show-cancel-button @confirm="editNickname">
       <van-field v-model="nickname" placeholder="请输入用户昵称" />
     </van-dialog>
 
     <!-- 
       修改密码的对话框
     -->
-    <van-dialog
-      v-model="show1"
-      title="修改密码"
-      show-cancel-button
-      @confirm="editPassword"
-    >
+    <van-dialog v-model="show1" title="修改密码" show-cancel-button @confirm="editPassword">
       <van-field v-model="password" placeholder="请输入用户密码" />
     </van-dialog>
 
-    <van-dialog
-      v-model="show2"
-      title="修改性别"
-      show-cancel-button
-      @confirm="editGender"
-    >
+    <van-dialog v-model="show2" title="修改性别" show-cancel-button @confirm="editGender">
       <van-radio-group v-model="gender">
         <van-cell-group>
           <van-cell title="男" clickable @click="gender = 1">
@@ -104,40 +77,36 @@ export default {
     this.getInfo()
   },
   methods: {
-    getInfo() {
+    async getInfo() {
       // 发送ajax请求,获取个人信息
       const user_id = localStorage.getItem('user_id')
       const token = localStorage.getItem('token')
-      this.$axios({
+      const res = await this.$axios({
         method: 'get',
         url: `/user/${user_id}`
-      }).then(res => {
-        // console.log(res)
-        const { statusCode, data } = res.data
-        if (statusCode === 200) {
-          this.info = data
-          // console.log(this.info)
-        }
       })
+
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.info = data
+      }
     },
     // 修改用户，接收需要修改的数据
-    editUser(data) {
+    async editUser(data) {
       const user_id = localStorage.getItem('user_id')
       const token = localStorage.getItem('token')
-      this.$axios({
+      const res = await this.$axios({
         method: 'post',
         url: `/user_update/${user_id}`,
         data
-      }).then(res => {
-        // console.log(res.data)
-        const { statusCode, message } = res.data
-        if (statusCode === 200) {
-          // 1. 重新渲染
-          this.getInfo()
-          // 2. 给一个成功的提示
-          this.$toast.success(message)
-        }
       })
+      const { statusCode, message } = res.data
+      if (statusCode === 200) {
+        // 1. 重新渲染
+        this.getInfo()
+        // 2. 给一个成功的提示
+        this.$toast.success(message)
+      }
     },
     // 显示修改昵称的对话框
     showNickname() {
@@ -229,25 +198,6 @@ export default {
       this.showCropper = true
       // 设置上传的这个文件就是需要裁剪的文件
       this.img = file.content
-      // // 需要异步的上传文件
-      // const fd = new FormData()
-      // fd.append('file', file.file)
-      // this.$axios({
-      //   method: 'post',
-      //   url: '/upload',
-      //   data: fd
-      // }).then(res => {
-      //   // console.log(res.data)
-      //   // 成功了，需要做什么？
-      //   const { statusCode, data } = res.data
-      //   if (statusCode === 200) {
-      //     // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
-      //     // console.log(data.url)
-      //     this.editUser({
-      //       head_img: data.url
-      //     })
-      //   }
-      // })
     },
     beforeRead(file) {
       // 控制文件大小不能超过200k
@@ -270,30 +220,29 @@ export default {
     },
     // 裁剪图片
     crop() {
-      this.$refs.cropper.getCropBlob(data => {
-        // console.log(data)
+      this.$refs.cropper.getCropBlob(async data => {
         // 需要把裁剪出来的文件进行上传
         const fd = new FormData()
         fd.append('file', data)
-        this.$axios({
+        const res = await this.$axios({
           method: 'post',
           url: '/upload',
           data: fd
-        }).then(res => {
-          const { statusCode, data } = res.data
-          if (statusCode === 200) {
-            // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
-            // console.log(data.url)
-            // 隐藏裁剪框
-            this.showCropper = false
-            // 把裁剪的图片地址清楚
-            this.img = ''
-            // 修改头像
-            this.editUser({
-              head_img: data.url
-            })
-          }
         })
+        // data变量重复声明了
+        const { statusCode, data: data1 } = res.data
+        if (statusCode === 200) {
+          // 能够拿到上传的图片的地址了，还需要修改掉用户的头像
+          // console.log(data.url)
+          // 隐藏裁剪框
+          this.showCropper = false
+          // 把裁剪的图片地址清楚
+          this.img = ''
+          // 修改头像
+          this.editUser({
+            head_img: data1.url
+          })
+        }
       })
     }
   },

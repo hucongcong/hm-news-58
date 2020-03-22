@@ -21,7 +21,7 @@
     <!-- 导航条 -->
     <hm-navbar title="我的关注" @click="$router.push('/my-follow')" content="关注的用户"></hm-navbar>
     <hm-navbar title="我的跟帖" @click="$router.push('/my-comments')" content="跟帖/回复"></hm-navbar>
-    <hm-navbar title="我的收藏" content="文章/视频"></hm-navbar>
+    <hm-navbar title="我的收藏" @click="$router.push('/my-star')" content="文章/视频"></hm-navbar>
     <hm-navbar title="设置" @click="$router.push('/edit')"></hm-navbar>
     <hm-navbar title="退出" @click="logout"></hm-navbar>
   </div>
@@ -35,45 +35,38 @@ export default {
       info: {}
     }
   },
-  created() {
+  async created() {
     // 发送请求，获取个人详细信息
     // 必须在发请求的时候，携带token
     // token需要通过一个请求头：Authorization
     const user_id = localStorage.getItem('user_id')
     const token = localStorage.getItem('token')
-    this.$axios({
+    const res = await this.$axios({
       method: 'get',
       url: `/user/${user_id}`
-    }).then(res => {
-      // console.log(res)
-      const { statusCode, data } = res.data
-      if (statusCode === 200) {
-        this.info = data
-        // console.log(this.info)
-      }
     })
+    // console.log(res)
+    const { statusCode, data } = res.data
+    if (statusCode === 200) {
+      this.info = data
+      // console.log(this.info)
+    }
   },
   methods: {
-    logout() {
-      // console.log('退出功能')
-      // localStorage.removeItem('token')
-      // localStorage.removeItem('user_id')
-      // this.$router.push('/login')
-      this.$dialog
-        .confirm({
+    async logout() {
+      try {
+        await this.$dialog.confirm({
           title: '温馨提示',
           message: '你确定要退出本系统吗'
         })
-        .then(() => {
-          localStorage.removeItem('token')
-          localStorage.removeItem('user_id')
-          this.$router.push('/login')
-          this.$toast.success('退出成功')
-        })
-        .catch(() => {
-          // console.log('取消了')
-          this.$toast('取消退出')
-        })
+        localStorage.removeItem('token')
+        localStorage.removeItem('user_id')
+        this.$router.push('/login')
+        this.$toast.success('退出成功')
+      } catch {
+        // 点击了取消
+        this.$toast('取消退出')
+      }
     }
   }
 }
