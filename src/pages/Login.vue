@@ -65,8 +65,14 @@ export default {
         // 保存登录的token和用户信息
         localStorage.setItem('token', data.token)
         localStorage.setItem('user_id', data.user.id)
-        // 如果登录成功了，需要跳转到个人中心
-        this.$router.push('/user')
+        // 如果登录成功了，需要跳转到个人中心,也可能需要回跳
+        // this.$router.push('/user')
+        // this.$router.back()
+        if (this.$route.params.back) {
+          this.$router.back()
+        } else {
+          this.$router.push('/user')
+        }
       } else {
         this.$toast.fail(message)
       }

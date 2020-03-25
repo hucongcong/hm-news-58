@@ -10,14 +10,26 @@ import Test from '../pages/Test.vue'
 import MyFollow from '../pages/MyFollow.vue'
 import MyComments from '../pages/MyComments.vue'
 import MyStar from '../pages/MyStar.vue'
+import Home from '../pages/Home.vue'
+import PostDetail from '../pages/PostDetail.vue'
+
 Vue.use(VueRouter)
+
+// 解决NavigationDuplicated报错
+const originalPush = VueRouter.prototype.push
+VueRouter.prototype.push = function push(location, onResolve, onReject) {
+  if (onResolve || onReject)
+    return originalPush.call(this, location, onResolve, onReject)
+  return originalPush.call(this, location).catch(err => err)
+}
 
 const router = new VueRouter({
   // 配置路由规则
   routes: [
     {
       path: '/',
-      redirect: '/login'
+      component: Home,
+      name: 'home'
     },
     // 命名路由：给每一个路由规则起一个名字，指定name即可。
     {
@@ -59,6 +71,11 @@ const router = new VueRouter({
       path: '/my-star',
       component: MyStar,
       name: 'my-star'
+    },
+    {
+      path: '/post-detail/:id',
+      component: PostDetail,
+      name: 'post-detail'
     }
   ]
 })
@@ -88,7 +105,11 @@ router.beforeEach(function(to, from, next) {
     } else {
       // 没有token
       // 跳转到登录页
-      next('/login')
+      // next('/login')
+      // 如果没有登录，不推荐使用 next('/login') 使用 router.push('/login')
+      router.push({
+        name: 'login'
+      })
     }
   } else {
     // 放行
