@@ -1,44 +1,41 @@
 <template>
-  <div class="home">
-    <van-button type="primary">哈哈哈哈</van-button>
-    <br />
-    <van-uploader />
+  <!-- 要在test组件中渲染son组件 -->
+  <div class="test">
+    我是test组件-----{{user.name}} ----- {{user.age}}
+    <!-- 要把user的son的数据给son组件渲染，但是如果user没有son属性，没必要渲染son组件 -->
+    <son v-if="user.son" :user="user.son"></son>
   </div>
 </template>
 
 <script>
-export default {}
+// 使用son组件渲染孩子信息
+import Son from './Son'
+export default {
+  components: {
+    Son
+  },
+  data() {
+    return {
+      user: {
+        name: '张安',
+        age: 99,
+        son: {
+          name: '张斯柯达',
+          age: 76,
+          son: {
+            name: '张斯',
+            age: 50,
+            son: {
+              name: '张塑料袋口',
+              age: 20
+            }
+          }
+        }
+      }
+    }
+  }
+}
 </script>
 
-<style lang="less" scoped>
-// 给test组件添加了样式，没有使用scoped
-// scoped的原理：
-// 一旦给组件添加了scoped属性，scoped会做两件事情  data-v-xxxxxx
-// 1. 会给当前组件中所有的样式的选择器添加一个额外的属性选择器
-// 2. 会给当前组件的模板的所有的标签都添加一个 额外的属性选择器
-
-// 如果添加了scoped属性，我们会发现覆盖第三方样式的时候，可能会覆盖不动。
-
-// 深度作用选择器： 保证的样式能够在子组件中也生效
-// css中   >>>
-// less中  /deep/
-// scss中  ::v-deep
-.van-button {
-  color: red;
-}
-
-// .van-uploader {
-//   width: 200px;
-//   height: 200px;
-//   background-color: pink;
-// }
-
-/deep/ .van-uploader__upload {
-  width: 200px;
-  height: 200px;
-}
-
-/deep/ .van-icon {
-  font-size: 50px;
-}
+<style>
 </style>

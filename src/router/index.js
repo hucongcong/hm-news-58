@@ -12,6 +12,8 @@ import MyComments from '../pages/MyComments.vue'
 import MyStar from '../pages/MyStar.vue'
 import Home from '../pages/Home.vue'
 import PostDetail from '../pages/PostDetail.vue'
+import TabEdit from '../pages/TabEdit.vue'
+import Search from '../pages/Search.vue'
 
 Vue.use(VueRouter)
 
@@ -76,6 +78,16 @@ const router = new VueRouter({
       path: '/post-detail/:id',
       component: PostDetail,
       name: 'post-detail'
+    },
+    {
+      path: '/tab-edit',
+      component: TabEdit,
+      name: 'tab-edit'
+    },
+    {
+      path: '/search',
+      component: Search,
+      name: 'search'
     }
   ]
 })

@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Document</title>
+    <style>
+      .demo {
+        padding: 10px;
+        border: 1px solid #000;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app">
+      <demo :count="count"></demo>
+    </div>
+    <script src="../node_modules/vue/dist/vue.js"></script>
+    <script>
+      // 递归组件的概念：
+      // 1. 在组件的模板中，渲染组件本身。
+      // 2. 不能一直渲染下去，渲染组件本身一定要有条件  v-if="false"
+      // 控制组件只渲染5次
+      Vue.component('demo', {
+        template: `
+          <div class="demo">
+            我是demo组件
+            <demo :count="count+1" v-if="count < 10"></demo>
+          </div>
+        `,
+        props: {
+          count: Number
+        }
+      })
+      const vm = new Vue({
+        el: '#app',
+        data: {
+          msg: 'hello',
+          count: 1
+        }
+      })
+    </script>
+  </body>
+</html>

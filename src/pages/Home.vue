@@ -4,7 +4,7 @@
       <div class="left">
         <span class="iconfont iconnew"></span>
       </div>
-      <div class="center">
+      <div class="center" @click="$router.push('/search')">
         <span class="iconfont iconsearch"></span>
         <span class="text">搜索新闻</span>
       </div>
@@ -19,17 +19,27 @@
     -->
     <van-tabs v-model="active" sticky swipeable animated>
       <van-tab :title="tab.name" v-for="tab in tabList" :key="tab.id">
-        <!-- 使用van-list组件包裹文章 -->
-        <van-list
-          v-model="loading"
-          :finished="finished"
-          finished-text="没有更多了"
-          @load="onLoad"
-          :immediate-check="false"
-          :offset="50"
-        >
-          <hm-post v-for="post in postList" :key="post.id" :post="post"></hm-post>
-        </van-list>
+        <!-- 
+          @refresh: 下拉会触发的refresh事件
+          refreshing： 控制下拉状态
+         -->
+        <van-pull-refresh v-model="refreshing" @refresh="onRefresh">
+          <!-- 使用van-list组件包裹文章 -->
+          <van-list
+            v-model="loading"
+            :finished="finished"
+            finished-text="没有更多了"
+            @load="onLoad"
+            :immediate-check="false"
+            :offset="50"
+          >
+            <hm-post
+              v-for="post in postList"
+              :key="post.id"
+              :post="post"
+            ></hm-post>
+          </van-list>
+        </van-pull-refresh>
       </van-tab>
     </van-tabs>
   </div>
@@ -37,6 +47,7 @@
 
 <script>
 export default {
+  name: 'home',
   data() {
     return {
       // 指定选中的那个tab
@@ -52,19 +63,32 @@ export default {
       // 控制List组件的加载状态
       loading: false,
       // 控制是否还有更多数据
-      finished: false
+      finished: false,
+      // 下拉的时候refreshing回变成true, 需要加载后，把refreshing改成false
+      refreshing: false
     }
   },
   async created() {
+    console.log('home组件创建了')
     // 发送请求，获取所有的tab数据
+    const activeTabs = JSON.parse(localStorage.getItem('activeTabs'))
+    if (activeTabs) {
+      this.tabList = activeTabs
+      // 发送请求，获取文章列表的数据
+      this.getPostList(this.tabList[this.active].id)
+      return
+    }
+    // 如果缓存中没有activeTabs，就发送请求，加载所有的栏目
     const res = await this.$axios.get('/category')
     const { statusCode, data } = res.data
     if (statusCode === 200) {
       // 获取到时所有的分类数据
       this.tabList = data
-      console.log(this.tabList)
       this.getPostList(this.tabList[this.active].id)
     }
+  },
+  destroyed() {
+    console.log('home组件被销毁了')
   },
   methods: {
     // 用于获取文章数据
@@ -78,7 +102,6 @@ export default {
         }
       })
       const { statusCode, data } = res.data
-      console.log(data)
 
       // 由于频繁的切换，会导致数据清空不及时
       // 如果页码值还是1，并且postList中还有数据
@@ -89,9 +112,10 @@ export default {
       // this.postList = data
       // 数据不能替换，只能追加
       this.postList = [...this.postList, ...data]
-      console.log(this.postList)
       // 数据加载完成，把loading改成false
       this.loading = false
+      // 让refreshing变成false
+      this.refreshing = false
       // 判断还有没有更多的数据
       if (data.length < this.pageSize) {
         this.finished = true
@@ -99,10 +123,21 @@ export default {
     },
     onLoad() {
       // 上拉加载会执行的函数
-      console.log('onLoad')
       const id = this.tabList[this.active].id
       setTimeout(() => {
         this.pageIndex++
+        this.getPostList(id)
+      }, 1000)
+    },
+    onRefresh() {
+      console.log('123')
+      // 重新加载所有的数据
+      this.pageIndex = 1
+      this.postList = []
+      this.loading = true
+      this.finished = false
+      setTimeout(() => {
+        const id = this.tabList[this.active].id
         this.getPostList(id)
       }, 1000)
     }

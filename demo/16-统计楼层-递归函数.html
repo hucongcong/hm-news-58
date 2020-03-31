@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 树形数据
+      var obj = {
+        name: '张三',
+        age: 12,
+        parent: {
+          name: '张单',
+          age: 28,
+          parent: {
+            name: '张大可',
+            age: 48,
+            parent: {
+              name: '张会计',
+              age: 68,
+              parent: {
+                name: '张老头',
+                age: 88
+              }
+            }
+          }
+        }
+      }
+      var obj2 = {
+        name: '张三',
+        age: 18,
+        parent: {
+          name: '张单',
+          age: 28,
+          parent: {
+            name: '张大可',
+            age: 48
+          }
+        }
+      }
+
+      // 定义一个方法，用于统计parent的层数
+      // 需要使用递归
+      function getCount(num, data) {
+        // 判断data是否有parent属性
+        if (data.parent) {
+          // 如果有parent，层级+1， 并且把data.parent
+          return getCount(num + 1, data.parent)
+        } else {
+          return num
+        }
+      }
+      const count = getCount(0, obj)
+      console.log(count)
+    </script>
+  </body>
+</html>

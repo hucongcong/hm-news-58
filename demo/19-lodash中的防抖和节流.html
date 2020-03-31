@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <input type="text" />
+    <script src="lodash.js"></script>
+    <script>
+      // 应该使用防抖
+      // function fn() {
+      //   console.log('我会执行', this.value)
+      // }
+
+      // 参数1： 需要防抖的函数
+      // 参数2： 延迟时间
+      // 返回新函数,新函数就是防抖函数， 如果频繁触发，必须等最后一次的500毫秒才执行
+      // const newFn = _.debounce(fn, 500)
+      // var input = document.querySelector('input')
+      // input.oninput = newFn
+
+      // _.throttle() 创建一个节流函数
+
+      var input = document.querySelector('input')
+      input.oninput = _.throttle(function() {
+        console.log('我触发了', this.value)
+      }, 1000)
+    </script>
+  </body>
+</html>

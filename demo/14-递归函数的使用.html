@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      // 递归函数
+      // 递归函数： 函数自己调用自己，就叫递归函数
+      // 递归函数的注意点：1. 自己调用自己 2. 要有出口
+
+      // 讲故事
+      // 需求： 只需要讲5遍
+      var count = 0
+      function fn() {
+        count++
+        console.log('从前有座山')
+        console.log('山里有座庙')
+        console.log('庙里有个老和尚')
+        console.log('老和尚给小和尚讲故事')
+        if (count < 5) {
+          fn()
+        }
+      }
+
+      fn()
+    </script>
+  </body>
+</html>

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <script>
+      var user = {
+        name: '张安',
+        age: 99,
+        children: {
+          name: '张斯柯达',
+          age: 76,
+          children: {
+            name: '张斯',
+            age: 50,
+            children: {
+              name: '张塑料袋口',
+              age: 20
+            }
+          }
+        }
+      }
+
+      // 统计son出现的层数
+      // 0层  找son是否出现
+      // 如果son出现 让层加1   1层
+      // 继续往里面找， 如果出现son  2层
+
+      // 统计obj中出现的son的次数
+      function getCount(num, obj) {
+        // 逻辑 如果obj有son， 让num+1  继续统计
+        // 如果obj没有son，name就是num次
+        if (obj.children) {
+          return getCount(num + 1, obj.children)
+        } else {
+          return num
+        }
+      }
+
+      const result = getCount(0, user)
+      console.log(result)
+    </script>
+  </body>
+</html>

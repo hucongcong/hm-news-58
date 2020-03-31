@@ -19,13 +19,14 @@ import HmButton from './components/HmButton.vue'
 import HmInput from './components/HmInput.vue'
 import HmNavbar from './components/HmNavbar.vue'
 import HmPost from './components/HmPost.vue'
+import HmComment from './components/HmComment.vue'
 Vue.component('hm-header', HmHeader)
 Vue.component('hm-logo', HmLogo)
 Vue.component('hm-button', HmButton)
 Vue.component('hm-input', HmInput)
 Vue.component('hm-navbar', HmNavbar)
 Vue.component('hm-post', HmPost)
-
+Vue.component('hm-comment', HmComment)
 // ----------------------vant-ui的处理--------------------------------
 // import Vant from 'vant'
 // import 'vant/lib/index.css'
@@ -45,7 +46,8 @@ import {
   Uploader,
   List,
   Tab,
-  Tabs
+  Tabs,
+  PullRefresh
 } from 'vant'
 Vue.use(Button)
 Vue.use(Field)
@@ -59,6 +61,7 @@ Vue.use(Uploader)
 Vue.use(List)
 Vue.use(Tab)
 Vue.use(Tabs)
+Vue.use(PullRefresh)
 
 // axios的优化
 // axios和vue没有关系，强行让axios和Vue有关系
@@ -108,6 +111,26 @@ import moment from 'moment'
 Vue.filter('date', function(input, format = 'YYYY-MM-DD') {
   return moment(input).format(format)
 })
+
+// 格式化时间，需要显示 2小时前  1小时前
+// 如果日期超过一天，直接显示具体的时间， 如果日期小于1天，显示成 多少小时前
+Vue.filter('date2', function(input) {
+  const d = new Date(input)
+  const now = new Date()
+  const hour = ((now - d) / 1000 / 60 / 60) | 0
+  if (hour < 1) {
+    return '1小时内'
+  } else if (hour < 24) {
+    return hour + '小时前'
+  } else {
+    return moment(input).format('YYYY-MM-DD HH:mm:ss')
+  }
+})
+
+// ------------------------------------bus的处理----------------------------
+const bus = new Vue()
+// 把bus绑定到vue的原型上。 所有组件都能访问到这个bus对象
+Vue.prototype.$bus = bus
 
 Vue.config.productionTip = false
 

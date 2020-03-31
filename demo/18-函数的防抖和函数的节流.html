@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <!-- 
+      函数防抖和函数节流都是用于性能 优化的
+
+
+      函数的防抖： 玩游戏  放技能 读条
+     -->
+    <input type="text" />
+
+    <script>
+      var input = document.querySelector('input')
+      var timer
+      input.oninput = function() {
+        if (timer) {
+          clearInterval(timer)
+        }
+        timer = setTimeout(function() {
+          console.log('我正在输入')
+        }, 500)
+      }
+    </script>
+  </body>
+</html>

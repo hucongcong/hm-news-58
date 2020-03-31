@@ -1,5 +1,5 @@
 <template>
-  <div class="post-detail">
+  <div class="post-detail" :class="isShow? 'pd140': 'pd50'">
     <div class="header">
       <div class="left" @click="$router.back()">
         <span class="iconfont iconjiantou2"></span>
@@ -23,8 +23,28 @@
         <span>{{detail.create_date | date}}</span>
       </div>
 
-      <!-- 内容 -->
-      <div class="content" v-html="detail.content"></div>
+      <!-- 
+        内容区域
+          1. 对于type为1的文章，就是普通的文章，她的content是一系列的标签。所以需要使用v-html进行展示
+          2. 对于type为2的文章，视频类的文章，它的content是一个url地址，是视频的地址，应该使用一个video标签进行展示。
+
+          遇到的问题
+            视频会报403错误
+              404：not found  资源没找到，url地址写错
+              403：forbidden  服务器有资源，拒绝访问。  视频的服务器做了防盗链的处理。
+          
+          屏蔽防盗链（不一定好使） 给index.html添加一个meta
+            <meta name="referrer" content="no-referrer" />
+
+          把视频下载本地，直接引入本地的视频即可。
+
+          video常用的属性
+            controls: 是否显示控制条  播放 进度条
+            autoplay: 控制视频是否自动播放
+            muted: 控制视频是否静音
+      -->
+      <div v-if="detail.type === 1" class="content" v-html="detail.content"></div>
+      <video v-else :src="detail.content" controls autoplay muted></video>
 
       <div class="btns">
         <div class="btn like" :class="{active: detail.has_like}" @click="like">
@@ -38,6 +58,14 @@
       </div>
     </div>
 
+    <!-- 跟帖列表 -->
+    <div class="comment-list">
+      <div class="title">精彩跟帖</div>
+      <!-- 渲染评论列表 -->
+      <!-- <hm-comment v-for="item in commentList" :key="item.id" :comment="item" @reply="reply"></hm-comment> -->
+      <hm-comment v-for="item in commentList" :key="item.id" :comment="item"></hm-comment>
+    </div>
+
     <!-- 文章的底部 -->
     <div class="footer">
       <div class="input" v-if="!isShow">
@@ -49,8 +77,13 @@
         <span class="iconfont iconfenxiang"></span>
       </div>
       <div class="textarea" v-else>
-        <textarea placeholder="回复" @blur="handleBlur" ref="textarea"></textarea>
-        <div class="send">发送</div>
+        <textarea
+          :placeholder="'回复:' + replyNickname"
+          @blur="handleBlur"
+          ref="textarea"
+          v-model="content"
+        ></textarea>
+        <div class="send" @click="add">发送</div>
       </div>
     </div>
   </div>
@@ -65,24 +98,56 @@ export default {
         user: {}
       },
       // 控制textarea的显示
-      isShow: false
+      isShow: false,
+      // 存放评论列表
+      commentList: [],
+      replyNickname: '',
+      replyId: '',
+      // 评论的内容
+      content: ''
     }
   },
-  async created() {
+  created() {
+    console.log('详情页组件创建')
     this.getDetail()
+    this.getCommnents()
+
+    // 在post-detail一创建，就给给bus注册一个事件
+    this.$bus.$on('reply', async (id, nickname) => {
+      console.log('父组件接受', id, nickname)
+      // 父组件应该显示textarea框，并且要自动获取焦点
+      this.isShow = true
+      // 等待dom更新完成
+      await this.$nextTick()
+      this.$refs.textarea.focus()
+
+      // 把接受到的id和nickname存储起来
+      this.replyId = id
+      this.replyNickname = nickname
+    })
+  },
+  destroyed() {
+    console.log('详情页组件被销毁了')
   },
   methods: {
+    // 获取文章详情
     async getDetail() {
       // 获取文章详情
       const id = this.$route.params.id
-      // console.log(id)
 
       const res = await this.$axios.get(`/post/${id}`)
-      // console.log(res)
       const { statusCode, data } = res.data
       if (statusCode === 200) {
         this.detail = data
-        console.log(this.detail)
+      }
+    },
+    // 获取文章评论
+    async getCommnents() {
+      const id = this.$route.params.id
+      const res = await this.$axios.get(`/post_comment/${id}`)
+      const { statusCode, data } = res.data
+      if (statusCode === 200) {
+        this.commentList = data
       }
     },
     async follow(id) {
@@ -102,7 +167,6 @@ export default {
       // 思路2：直接发送请求进行关注
       const res = await this.$axios.get(`/user_follows/${id}`)
 
-      // console.log(res.data)
       const { statusCode } = res.data
       if (statusCode === 200) {
         this.$toast.success('关注成功')
@@ -115,7 +179,6 @@ export default {
       // 思路2：直接发送请求进行取消关注
       const res = await this.$axios.get(`/user_unfollow/${id}`)
 
-      // console.log(res.data)
       const { statusCode } = res.data
       if (statusCode === 200) {
         this.$toast.success('取关成功')
@@ -173,16 +236,98 @@ export default {
     },
     handleBlur() {
       // 当textarea框没有焦点，重新显示input框
-      this.isShow = false
+      // 如果textarea中有内容，不应该隐藏
+      // 取消回复
+      if (!this.content) {
+        this.isShow = false
+        this.replyNickname = ''
+        this.replyId = ''
+      }
+    },
+    async reply(id, nickname) {
+      // 父组件应该显示textarea框，并且要自动获取焦点
+      this.isShow = true
+      // 等待dom更新完成
+      await this.$nextTick()
+      this.$refs.textarea.focus()
+
+      // 把接受到的id和nickname存储起来
+      this.replyId = id
+      this.replyNickname = nickname
+    },
+    // 添加评论
+    async add() {
+      const token = localStorage.getItem('token')
+      if (!token) {
+        this.$router.push({
+          name: 'login',
+          params: {
+            back: true
+          }
+        })
+        this.$toast('请先登录')
+        return
+      }
+
+      // 登录了，发送ajax请求
+      // this.$axios({
+      //   method: 'get',
+      //   url: 'xxxx',
+      //   params: {
+      //     // get请求的参数
+      //   }
+      // })
+
+      // // get请求简写
+      // this.$axios.get('xxxx', {
+      //   params: {
+      //     username: 'zs',
+      //     password: 123
+      //   }
+      // })
+
+      // this.$axios({
+      //   method: 'post',
+      //   url: 'xxxx',
+      //   data: {}
+      // })
+
+      // post请求的简写
+      // this.$axios.post('url', {
+
+      // })
+
+      // this.$axios.post(`/post_comment/${this.detail.id}`, {})
+      const res = await this.$axios.post(`/post_comment/${this.detail.id}`, {
+        content: this.content,
+        parent_id: this.replyId
+      })
+      // 回复成功的处理
+      const { statusCode, message } = res.data
+      if (statusCode === 200) {
+        this.$toast.success(message)
+        // 重新渲染评论和文章
+        this.getCommnents()
+        this.getDetail()
+
+        // 隐藏textarea
+        this.isShow = false
+        this.replyNickname = ''
+        this.replyId = ''
+        this.content = ''
+      }
     }
-  },
-  updated() {
-    console.log('updated')
   }
 }
 </script>
 
 <style lang="less" scoped>
+.pd140 {
+  padding-bottom: 140px;
+}
+.pd50 {
+  padding-bottom: 50px;
+}
 .header {
   height: 50px;
   line-height: 50px;
@@ -238,6 +383,9 @@ export default {
   .content {
     font-size: 14px;
   }
+  video {
+    width: 100%;
+  }
 }
 .btns {
   display: flex;
@@ -266,7 +414,21 @@ export default {
   }
 }
 
+.comment-list {
+  border-top: 3px solid #ccc;
+  .title {
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    padding: 20px 0;
+  }
+}
 .footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
   .input {
     height: 50px;
     display: flex;
