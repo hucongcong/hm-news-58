@@ -10,7 +10,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "lib-flexible": "^0.3.2",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "moment": "^2.24.0",
     "postcss-px2rem": "^0.3.0",
     "vant": "^2.5.5",
